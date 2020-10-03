@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 
 public class PlayerControl : MonoBehaviour
@@ -12,7 +11,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private ScoreController scoreController;
 
-    private bool isCrouch,isDead=false,isGrounded,hasKey;
+    private bool isCrouch,isGrounded,hasKey;
 
 
 
@@ -35,7 +34,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (collisionInfo.collider.tag == "Finish" && hasKey)
         {
-            SceneManager.LoadScene("Scene2");
+            FindObjectOfType<GameManager>().levelComplete();
         }
 
         if (collisionInfo.collider.tag == "Ground")
@@ -45,13 +44,20 @@ public class PlayerControl : MonoBehaviour
 
     }
 
+
+    internal void playerDie()
+    {
+        Destroy(gameObject);
+        FindObjectOfType<GameManager>().resetGame();
+    }
+
     internal void pickUpKey()
     {
         hasKey = true;
         scoreController.increaseScore(20);
     }
 
-    void playerMovement(float horizontal, float vertical)
+    void playerMovement(float horizontal, bool vertical)
     {   
         // Run actual motion
         Vector3 position = transform.position;
@@ -64,7 +70,7 @@ public class PlayerControl : MonoBehaviour
 
 
         // Jump motion
-        if (vertical > 0)
+        if (vertical)
         {
             if (isGrounded)
             {
@@ -74,14 +80,13 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    void playerAnimation(float horizontal,float vertical,bool isCrouch)
+    void playerAnimation(float horizontal,bool vertical,bool isCrouch)
     {   
         // Run animation
         animator.SetFloat("Speed", Mathf.Abs(horizontal));
-        
+
         // Jump Animation
-        bool isJumping = (vertical > 0) ? true : false;
-        animator.SetBool("Jump", isJumping);
+        animator.SetBool("Jump", vertical);
 
         // Croutch animation and Collider Resize
         animator.SetBool("Crouch", isCrouch);
@@ -97,17 +102,18 @@ public class PlayerControl : MonoBehaviour
     void Update()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Jump");
+        bool vertical = Input.GetKeyDown(KeyCode.Space);
         isCrouch = Input.GetKey(KeyCode.LeftControl);
  
         playerMovement(horizontal, vertical);
         playerAnimation(horizontal, vertical,isCrouch);
 
-        //death condition
-        if (transform.position.y < -12 && !(isDead))
+        //```````````````````````````````````````````````````
+        //````````````````death condition``````````````````
+        //```````````````````````````````````````````````````
+        if (transform.position.y < -12)
         {
-            isDead = true;
-            FindObjectOfType<GameManager>().resetGame();
+          FindObjectOfType<GameManager>().resetGame();
         }
     }
 }
