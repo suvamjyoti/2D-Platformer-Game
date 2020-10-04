@@ -12,9 +12,9 @@ public class ReplayButton : MonoBehaviour
         button.onClick.AddListener(OnButtonClick);
     }
 
-    // Update is called once per frame
     private void OnButtonClick()
     {
         FindObjectOfType<GameManager>().resetGame();
     }
+    
 }
