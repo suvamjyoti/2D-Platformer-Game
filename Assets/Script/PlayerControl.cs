@@ -13,9 +13,9 @@ public class PlayerControl : MonoBehaviour
     private ScoreController scoreController;
 
     private bool isCrouch,isGrounded,playerIsDead=false;
-    private int NoKey;
+    internal int NoKey,NoofLife=3;
 
-
+    private GameManager gameManager;
     private Rigidbody2D rb2d;
     // Two different collider two state i.e standing and croutch
     private PolygonCollider2D pc2d;
@@ -28,11 +28,15 @@ public class PlayerControl : MonoBehaviour
         bc2d = gameObject.GetComponent<BoxCollider2D>();
     }
 
+    private void Start() {
+        gameManager = FindObjectOfType<GameManager>();    
+    }
+
     void OnCollisionEnter2D(Collision2D collisionInfo)
     {
         if (collisionInfo.collider.tag == "Finish" && NoKey == 2)
         {
-            FindObjectOfType<GameManager>().startGame();
+            gameManager.startGame();
         }
 
         if (collisionInfo.collider.tag == "Ground")
@@ -42,7 +46,7 @@ public class PlayerControl : MonoBehaviour
 
         if (collisionInfo.collider.tag == "Danger")
         {
-            killPlayer();
+            gameManager.gameOver();
         }  
 
     }
@@ -56,16 +60,23 @@ public class PlayerControl : MonoBehaviour
     internal void killPlayer()
     { 
         if(!playerIsDead){
-            playerIsDead = true;
-            speed=0;
-            jump=0;
-            StartCoroutine(secondsToWaitFor(3.0f));  
+            if(NoofLife<=1){
+                NoofLife--;
+                playerIsDead = true;
+                speed=0;
+                jump=0;
+                StartCoroutine(secondsToWaitFor(3.0f));
+            }
+            else{
+                NoofLife--;
+                Debug.Log("No of Life left :" + NoofLife);
+            }  
         }
     }
 
     private IEnumerator secondsToWaitFor(float waitTime){
         yield return new WaitForSeconds(waitTime);
-        FindObjectOfType<GameManager>().gameOver();
+        gameManager.gameOver();
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
@@ -150,7 +161,7 @@ public class PlayerControl : MonoBehaviour
 
         if (transform.position.y < -12)
         {
-          killPlayer();
+          gameManager.gameOver();
         }
     }
 }
