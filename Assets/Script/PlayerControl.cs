@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 
 public class PlayerControl : MonoBehaviour
@@ -11,17 +12,14 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private ScoreController scoreController;
 
-    private bool isCrouch,isGrounded,hasKey;
-
+    private bool isCrouch,isGrounded,playerIsDead=false;
+    private int NoKey;
 
 
     private Rigidbody2D rb2d;
     // Two different collider two state i.e standing and croutch
     private PolygonCollider2D pc2d;
     private BoxCollider2D bc2d;
-
-    
-    
 
     void Awake()
     {
@@ -32,9 +30,9 @@ public class PlayerControl : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collisionInfo)
     {
-        if (collisionInfo.collider.tag == "Finish" && hasKey)
+        if (collisionInfo.collider.tag == "Finish" && NoKey == 2)
         {
-            FindObjectOfType<GameManager>().levelComplete();
+            FindObjectOfType<GameManager>().startGame();
         }
 
         if (collisionInfo.collider.tag == "Ground")
@@ -42,20 +40,53 @@ public class PlayerControl : MonoBehaviour
             isGrounded = true;
         }
 
+        if (collisionInfo.collider.tag == "Danger")
+        {
+            killPlayer();
+        }  
+
     }
 
-
-    internal void playerDie()
-    {
-        Destroy(gameObject);
-        FindObjectOfType<GameManager>().resetGame();
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //Death
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    
+    internal void killPlayer()
+    { 
+        if(!playerIsDead){
+            playerIsDead = true;
+            speed=0;
+            jump=0;
+            StartCoroutine(secondsToWaitFor(3.0f));  
+        }
     }
+
+    private IEnumerator secondsToWaitFor(float waitTime){
+        yield return new WaitForSeconds(waitTime);
+        FindObjectOfType<GameManager>().gameOver();
+    }
+
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //pickUp Key
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    
 
     internal void pickUpKey()
     {
-        hasKey = true;
+        NoKey++;
         scoreController.increaseScore(20);
     }
+
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //player Movement
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    
 
     void playerMovement(float horizontal, bool vertical)
     {   
@@ -80,16 +111,25 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //Animation
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````
+    
     void playerAnimation(float horizontal,bool vertical,bool isCrouch)
     {   
-        // Run animation
+        // Run Animation
         animator.SetFloat("Speed", Mathf.Abs(horizontal));
 
         // Jump Animation
         animator.SetBool("Jump", vertical);
 
-        // Croutch animation and Collider Resize
+        // Croutch Animation 
         animator.SetBool("Crouch", isCrouch);
+
+        //Death Animation
+        animator.SetBool("IsDead",playerIsDead);
     }
 
     void FixedUpdate()
@@ -108,12 +148,9 @@ public class PlayerControl : MonoBehaviour
         playerMovement(horizontal, vertical);
         playerAnimation(horizontal, vertical,isCrouch);
 
-        //```````````````````````````````````````````````````
-        //````````````````death condition``````````````````
-        //```````````````````````````````````````````````````
         if (transform.position.y < -12)
         {
-          FindObjectOfType<GameManager>().resetGame();
+          killPlayer();
         }
     }
 }
