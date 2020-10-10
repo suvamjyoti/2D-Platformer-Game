@@ -316,6 +316,7 @@ MonoBehaviour:
   speed: 10
   jump: 1000
   scoreController: {fileID: 0}
+  gameOver: {fileID: 0}
 --- !u!114 &2402169793879517206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,3 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eccb8146ef70c9b47a64273353e2db91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hearts:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

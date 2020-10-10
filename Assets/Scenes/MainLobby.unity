@@ -587,7 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playButton: {fileID: 661860589}
-  quitButton: {fileID: 0}
+  quitButton: {fileID: 1353513433}
   playAgainButton: {fileID: 0}
 --- !u!114 &661860589
 MonoBehaviour:
