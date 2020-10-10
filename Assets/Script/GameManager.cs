@@ -6,16 +6,30 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     internal void gameOver(){
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
 
     internal void QuiteGame(){
         Application.Quit();
     }
 
-    internal void startGame()
+    internal void resetGame()
     {
-        SceneManager.LoadScene(0);
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
     }
+
+    internal void levelSelection(){
+        SceneManager.LoadScene(1);
+    }
+
+    internal void nextLevel(){
+
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex+1);
+
+    }
+
+    
 }
 

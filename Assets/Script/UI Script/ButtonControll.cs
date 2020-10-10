@@ -5,7 +5,6 @@ public class ButtonControll : MonoBehaviour
     [SerializeField]
     private Button playButton,quitButton,playAgainButton;
     
-
     void Start()
     {
         playButton.onClick.AddListener(OnClickPlay);
@@ -14,7 +13,7 @@ public class ButtonControll : MonoBehaviour
     }
 
     void OnClickPlay(){
-        FindObjectOfType<GameManager>().startGame();
+        FindObjectOfType<GameManager>().levelSelection();
     }
 
     void OnClickQuit(){
@@ -22,7 +21,7 @@ public class ButtonControll : MonoBehaviour
     }
 
     void OnClickPlayAgain(){
-        FindObjectOfType<GameManager>().startGame();
+        FindObjectOfType<GameManager>().resetGame();
     }
 
 }

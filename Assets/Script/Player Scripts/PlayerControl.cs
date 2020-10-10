@@ -1,25 +1,36 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-
 public class PlayerControl : MonoBehaviour
 {
 
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````SerializeField
     [SerializeField]
     private Animator animator;
     [SerializeField]
     private float speed,jump;
     [SerializeField]
     private ScoreController scoreController;
-
-    private bool isCrouch,isGrounded,playerIsDead=false;
+    [SerializeField]
+    private GameOverScreenController gameOver;
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Values
+    private bool isCrouch,isGrounded;
+    internal bool playerIsDead=false;
     internal int NoKey,NoofLife=3;
 
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Instances
     private GameManager gameManager;
     private Rigidbody2D rb2d;
     // Two different collider two state i.e standing and croutch
     private PolygonCollider2D pc2d;
     private BoxCollider2D bc2d;
+    
+
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Awake
 
     void Awake()
     {
@@ -28,15 +39,21 @@ public class PlayerControl : MonoBehaviour
         bc2d = gameObject.GetComponent<BoxCollider2D>();
     }
 
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Start
+
     private void Start() {
         gameManager = FindObjectOfType<GameManager>();    
     }
+
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````OnCollisionEnter2d
 
     void OnCollisionEnter2D(Collision2D collisionInfo)
     {
         if (collisionInfo.collider.tag == "Finish" && NoKey == 2)
         {
-            gameManager.startGame();
+            gameManager.nextLevel();
         }
 
         if (collisionInfo.collider.tag == "Ground")
@@ -46,45 +63,41 @@ public class PlayerControl : MonoBehaviour
 
         if (collisionInfo.collider.tag == "Danger")
         {
-            gameManager.gameOver();
+            instantKill(3.0f);
         }  
 
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //Death
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    
+    //```````````````````````````````````````````````````````````````````````````````````````Death
+
     internal void killPlayer()
     { 
         if(!playerIsDead){
             if(NoofLife<=1){
                 NoofLife--;
                 playerIsDead = true;
-                speed=0;
-                jump=0;
                 StartCoroutine(secondsToWaitFor(3.0f));
             }
             else{
                 NoofLife--;
-                Debug.Log("No of Life left :" + NoofLife);
             }  
         }
     }
 
+    private void instantKill(float delay){
+        playerIsDead = true;
+        NoofLife = 0;
+        StartCoroutine(secondsToWaitFor(delay));
+    }
+
     private IEnumerator secondsToWaitFor(float waitTime){
         yield return new WaitForSeconds(waitTime);
-        gameManager.gameOver();
+        gameOver.PlayerDied();
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //pickUp Key
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    
+    //```````````````````````````````````````````````````````````````````````````````````````Pick Up Key
 
     internal void pickUpKey()
     {
@@ -93,15 +106,11 @@ public class PlayerControl : MonoBehaviour
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //player Movement
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    
+    //```````````````````````````````````````````````````````````````````````````````````````Player Movement
 
     void playerMovement(float horizontal, bool vertical)
     {   
-        // Run actual motion
+        //``````````````````````````````````````````````````````````````````````Run motion
         Vector3 position = transform.position;
         position.x += horizontal * speed * Time.deltaTime;
         transform.position = position;
@@ -110,8 +119,8 @@ public class PlayerControl : MonoBehaviour
         scale.x = (horizontal < 0) ? -1f * Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
         transform.localScale = scale;
 
+        //`````````````````````````````````````````````````````````````````````Jump motion
 
-        // Jump motion
         if (vertical)
         {
             if (isGrounded)
@@ -123,12 +132,8 @@ public class PlayerControl : MonoBehaviour
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //Animation
-    //```````````````````````````````````````````````````````````````````````````````````````
-    //```````````````````````````````````````````````````````````````````````````````````````
-    
-    void playerAnimation(float horizontal,bool vertical,bool isCrouch)
+    //```````````````````````````````````````````````````````````````````````````````````````Player Animation   
+    void playerAnimation(float horizontal,bool vertical)
     {   
         // Run Animation
         animator.SetFloat("Speed", Mathf.Abs(horizontal));
@@ -143,13 +148,17 @@ public class PlayerControl : MonoBehaviour
         animator.SetBool("IsDead",playerIsDead);
     }
 
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Fixed Update
+
     void FixedUpdate()
     {
       pc2d.enabled = (isCrouch) ? false : true;
-      bc2d.enabled = (isCrouch) ? true : false;
+      bc2d.enabled = !pc2d.enabled;
     }
 
-
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Update
     void Update()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -157,13 +166,14 @@ public class PlayerControl : MonoBehaviour
         isCrouch = Input.GetKey(KeyCode.LeftControl);
  
         playerMovement(horizontal, vertical);
-        playerAnimation(horizontal, vertical,isCrouch);
+        playerAnimation(horizontal, vertical);
 
-        if (transform.position.y < -12)
+        if (transform.position.y < -9)
         {
-          gameManager.gameOver();
+          instantKill(1.0f);
         }
     }
+
 }
 
     
