@@ -30,6 +30,10 @@ public class GameManager : MonoBehaviour
 
     }
 
+    internal void getLevel(string levelName){
+        SceneManager.LoadScene(levelName);
+    }
+
     
 }
 
