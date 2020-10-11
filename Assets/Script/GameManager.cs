@@ -1,18 +1,39 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    internal void resetGame()
-    {
-        SceneManager.LoadScene(0);
+    internal void gameOver(){
+        SceneManager.LoadScene(2);
     }
 
-    internal void levelComplete()
+    internal void QuiteGame(){
+        Application.Quit();
+    }
+
+    internal void resetGame()
     {
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
+    }
+
+    internal void levelSelection(){
         SceneManager.LoadScene(1);
     }
 
+    internal void nextLevel(){
+
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex+1);
+
+    }
+
+    internal void getLevel(string levelName){
+        SceneManager.LoadScene(levelName);
+    }
+
+    
 }
+
