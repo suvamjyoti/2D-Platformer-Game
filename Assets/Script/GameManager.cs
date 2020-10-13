@@ -23,13 +23,21 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
-    internal void nextLevel(){
-
-        Scene scene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(scene.buildIndex+1);
-
+    internal string getCurrentSceneName(){
+        return SceneManager.GetActiveScene().name;
     }
 
+    //```````````````````````````````````````Load next scene and return name of next scene
+    //````````````````````````````````````````````````````````````````````````````````````
+    internal string getNextSceneName(){
+        int nextSceneBuildIndex = SceneManager.GetActiveScene().buildIndex+1;
+        SceneManager.LoadScene(nextSceneBuildIndex); 
+        Scene scene = SceneManager.GetSceneByBuildIndex(nextSceneBuildIndex);
+        return scene.name;
+    }
+
+    //`````````````````````````````````````````````````````````````Load a particular level
+    //````````````````````````````````````````````````````````````````````````````````````
     internal void getLevel(string levelName){
         SceneManager.LoadScene(levelName);
     }
