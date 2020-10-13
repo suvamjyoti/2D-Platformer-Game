@@ -16,7 +16,8 @@ public class PlayerControl : MonoBehaviour
     private GameOverScreenController gameOver;
     //```````````````````````````````````````````````````````````````````````````````````````
     //```````````````````````````````````````````````````````````````````````````````````````Values
-    private bool isCrouch,isGrounded;
+    private bool isCrouch,isGrounded,vertical;
+    private float horizontal;
     internal bool playerIsDead=false;
     internal int NoKey,NoofLife=3;
 
@@ -51,21 +52,23 @@ public class PlayerControl : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collisionInfo)
     {
-        if (collisionInfo.collider.tag == "Finish" && NoKey == 2)
-        {
-            gameManager.nextLevel();
-        }
+        if(!playerIsDead){
+            if (collisionInfo.collider.tag == "Finish" && NoKey == 2)
+            {
+                LevelManager.Instance.SetCurrentLevelComplete();
+                //gameManager.nextLevel();
+            }
 
-        if (collisionInfo.collider.tag == "Ground")
-        {
-            isGrounded = true;
-        }
+            if (collisionInfo.collider.tag == "Ground")
+            {
+                isGrounded = true;
+            }
 
-        if (collisionInfo.collider.tag == "Danger")
-        {
-            instantKill(3.0f);
+            if (collisionInfo.collider.tag == "Danger")
+            {
+                instantKill(3.0f);
+            }
         }  
-
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
@@ -108,7 +111,7 @@ public class PlayerControl : MonoBehaviour
     //```````````````````````````````````````````````````````````````````````````````````````
     //```````````````````````````````````````````````````````````````````````````````````````Player Movement
 
-    void playerMovement(float horizontal, bool vertical)
+    void playerMovement()
     {   
         //``````````````````````````````````````````````````````````````````````Run motion
         Vector3 position = transform.position;
@@ -133,7 +136,7 @@ public class PlayerControl : MonoBehaviour
 
     //```````````````````````````````````````````````````````````````````````````````````````
     //```````````````````````````````````````````````````````````````````````````````````````Player Animation   
-    void playerAnimation(float horizontal,bool vertical)
+    void playerAnimation()
     {   
         // Run Animation
         animator.SetFloat("Speed", Mathf.Abs(horizontal));
@@ -161,17 +164,19 @@ public class PlayerControl : MonoBehaviour
     //```````````````````````````````````````````````````````````````````````````````````````Update
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        bool vertical = Input.GetKeyDown(KeyCode.Space);
-        isCrouch = Input.GetKey(KeyCode.LeftControl);
- 
-        playerMovement(horizontal, vertical);
-        playerAnimation(horizontal, vertical);
+        if(!playerIsDead){
+            horizontal = Input.GetAxisRaw("Horizontal");
+            vertical = Input.GetKeyDown(KeyCode.Space);
+            isCrouch = Input.GetKey(KeyCode.LeftControl);
+    
+            playerMovement();
 
-        if (transform.position.y < -9)
-        {
-          instantKill(1.0f);
+            if (transform.position.y < -9)
+            {
+                instantKill(1.0f);
+            }
         }
+        playerAnimation();
     }
 
 }

@@ -10,6 +10,7 @@ public class LevelLoader : MonoBehaviour
 
     private GameManager gameManager;
 
+
     private void Awake() {
         button = GetComponent<Button>();
         button.onClick.AddListener(OnClick);        
@@ -17,10 +18,26 @@ public class LevelLoader : MonoBehaviour
 
     private void Start() {
         gameManager = FindObjectOfType<GameManager>();
+        
     }
 
     private void OnClick(){
-        gameManager.getLevel(levelName);
+        LevelStatus levelStatus = LevelManager.Instance.GetLevelStatus(levelName);      //GetLevelStatus
+
+        switch(levelStatus){
+            case LevelStatus.Locked:                    //Locked
+                Debug.Log("Level Locked");
+                break;
+
+            case LevelStatus.Unlocked:                  //Unlocked
+                gameManager.getLevel(levelName);        
+                break;
+
+            case LevelStatus.Completed:                 //Completed
+                gameManager.getLevel(levelName);
+                break;
+        }
+
     }
 
 }
