@@ -13,14 +13,17 @@ public class ButtonControll : MonoBehaviour
     }
 
     void OnClickPlay(){
+        AudioManager.Instance.Play(Sounds.ButtonClick);
         FindObjectOfType<GameManager>().levelSelection();
     }
 
     void OnClickQuit(){
+        AudioManager.Instance.Play(Sounds.ButtonClick);
         FindObjectOfType<GameManager>().QuiteGame();
     }
 
     void OnClickPlayAgain(){
+        AudioManager.Instance.Play(Sounds.ButtonClick);
         FindObjectOfType<GameManager>().resetGame();
     }
 

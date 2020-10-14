@@ -171,7 +171,7 @@ public class PlayerControl : MonoBehaviour
     
             playerMovement();
 
-            if (transform.position.y < -9)
+            if (transform.position.y < -12)
             {
                 instantKill(1.0f);
             }
