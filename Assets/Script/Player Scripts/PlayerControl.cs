@@ -55,17 +55,19 @@ public class PlayerControl : MonoBehaviour
         if(!playerIsDead){
             if (collisionInfo.collider.tag == "Finish" && NoKey == 2)
             {
-                LevelManager.Instance.SetCurrentLevelComplete();
-                //gameManager.nextLevel();
+                AudioManager.Instance.Play(Sounds.doorOpen);
+                StartCoroutine(moveToNextLevelAfter(1.0f));
             }
 
-            if (collisionInfo.collider.tag == "Ground")
+            if (collisionInfo.collider.tag == "Ground" && !isGrounded)
             {
+                AudioManager.Instance.Play(Sounds.grounded);
                 isGrounded = true;
             }
 
             if (collisionInfo.collider.tag == "Danger")
             {
+                AudioManager.Instance.Play(Sounds.PlayerDeath);
                 instantKill(3.0f);
             }
         }  
@@ -80,10 +82,12 @@ public class PlayerControl : MonoBehaviour
             if(NoofLife<=1){
                 NoofLife--;
                 playerIsDead = true;
-                StartCoroutine(secondsToWaitFor(3.0f));
+                AudioManager.Instance.Play(Sounds.PlayerDeath);
+                StartCoroutine(playerDieAfter(3.0f));
             }
             else{
                 NoofLife--;
+                AudioManager.Instance.Play(Sounds.damage);
             }  
         }
     }
@@ -91,12 +95,20 @@ public class PlayerControl : MonoBehaviour
     private void instantKill(float delay){
         playerIsDead = true;
         NoofLife = 0;
-        StartCoroutine(secondsToWaitFor(delay));
+        StartCoroutine(playerDieAfter(delay));
     }
 
-    private IEnumerator secondsToWaitFor(float waitTime){
+    //```````````````````````````````````````````````````````````````````````````````````````
+    //```````````````````````````````````````````````````````````````````````````````````````Coroutine
+
+    private IEnumerator playerDieAfter(float waitTime){
         yield return new WaitForSeconds(waitTime);
         gameOver.PlayerDied();
+    }
+
+    private IEnumerator moveToNextLevelAfter(float waitTime){
+        yield return new  WaitForSeconds(waitTime);
+        LevelManager.Instance.SetCurrentLevelComplete();
     }
 
     //```````````````````````````````````````````````````````````````````````````````````````
@@ -128,6 +140,7 @@ public class PlayerControl : MonoBehaviour
         {
             if (isGrounded)
             {
+                AudioManager.Instance.Play(Sounds.jump);
                 rb2d.AddForce(new Vector2(0f, jump), ForceMode2D.Force);
                 isGrounded = false; 
             }
@@ -173,6 +186,7 @@ public class PlayerControl : MonoBehaviour
 
             if (transform.position.y < -12)
             {
+                AudioManager.Instance.Play(Sounds.PlayerDeath);
                 instantKill(1.0f);
             }
         }

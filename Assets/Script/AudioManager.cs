@@ -9,11 +9,10 @@ public class AudioManager : MonoBehaviour                      //Audio singelton
     public AudioSource soundEffect;
     public AudioSource soundMusic;
 
-    public SoundType[] Sounds;
+    public SoundType[] diffSound;
 
     //````````````````````````````````````````````````````````````````````````````````````
-    //````````````````````````````````````````````````````````````````````````````````````
-    
+    //````````````````````````````````````````````````````````````````````````````````````  
     private void Awake() {
         if(instance == null){
             instance = this;
@@ -24,26 +23,48 @@ public class AudioManager : MonoBehaviour                      //Audio singelton
         }
     }
 
-    //```````````````````````````````````````````````````````````````Play a certain Sound
     //````````````````````````````````````````````````````````````````````````````````````
+    //````````````````````````````````````````````````````````````````````````````````````  
+    private void Start() {
 
-    internal void Play(Sounds sound){
-        AudioClip clip = getSoundClip(sound);
+        //PlayMusic(Sounds.BGmusic);
+
+    }
+
+     //````````````````````````````````````````````````````````````````Play a certain Music
+     //````````````````````````````````````````````````````````````````````````````````````
+     internal void PlayMusic(Sounds requiredMusicType){
+
+         AudioClip clip = getSoundClip(requiredMusicType);
+
+         if(clip!=null){
+             soundMusic.clip = clip;
+             soundMusic.Play();                                                          //Play in Loop
+         }
+         else{
+             Debug.Log("Clip Not Found");
+         }
+
+    }
+
+    //`````````````````````````````````````````````````````````````````Play a Sound effect
+    //````````````````````````````````````````````````````````````````````````````````````
+    internal void Play(Sounds requiredSoundType){
+        AudioClip clip = getSoundClip(requiredSoundType);
         if(clip!=null){
-            soundEffect.PlayOneShot(clip);                          //PlayOneShot - plays only once
+            soundEffect.PlayOneShot(clip);                                              //PlayOneShot - plays only once
         }
         else{
             Debug.Log("Clip not Found");
         } 
     }
 
-    //`````````````````````````````````````````````````````````````````Get a certain Sound
+    //```````````````````````find a certain Sound or music from diffSound array(of object) 
     //````````````````````````````````````````````````````````````````````````````````````
-
-    private AudioClip getSoundClip(Sounds sound){
-        SoundType item = Array.Find(Sounds,i=>i.soundType==sound);    //for i in array SoundType find the index where it is stored
+    private AudioClip getSoundClip(Sounds requiredSoundType){
+        SoundType item = Array.Find(diffSound,i=>i.soundType==requiredSoundType);       //for each i(object) in array diffSound find the object with required soundType
         if(item!=null){
-            return item.soundClip;                                    //return the required sound clip according to sound Clip
+            return item.soundClip;                                                      //return the required sound clip according to requiredSoundType
         }
         return null;
     } 
@@ -65,7 +86,9 @@ public class SoundType{
 public enum Sounds{
     ButtonClick,
     PlayerDeath,
-    PlayerMove,
-    EnemyMove,
-    BGmusic
+    pickKey,
+    damage,
+    jump,
+    doorOpen,
+    grounded
 }
